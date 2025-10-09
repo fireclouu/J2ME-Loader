@@ -20,6 +20,7 @@ package javax.microedition.midlet;
 
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
@@ -32,6 +33,8 @@ import java.util.Map;
 
 import javax.microedition.io.ConnectionNotFoundException;
 import javax.microedition.io.Connector;
+import javax.microedition.lcdui.Alert;
+import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Display;
 import javax.microedition.shell.MidletThread;
 import javax.microedition.util.ContextHolder;
@@ -117,17 +120,19 @@ public abstract class MIDlet {
 					intent.setData(Uri.parse(url));
 				}
 
-
-				new AlertDialog.Builder(ContextHolder.getActivity())
-					.setTitle(R.string.url_leaving_redirect_title)
-					.setCancelable(false)
-					.setMessage(ContextHolder.getAppContext().getString(R.string.url_leaving_redirect_description, url))
-					.setPositiveButton(R.string.url_leaving_redirect_button_proceed, (dialog, which) -> {
-						ContextHolder.getActivity().startActivity(intent);
-						dialog.dismiss();
-					})
-					.setNegativeButton(R.string.url_leaving_redirect_button_cancel, null)
-					.show();
+				if (ContextHolder.getActivity() != null) {
+					ContextHolder.getActivity().runOnUiThread(() -> {
+						new AlertDialog.Builder(ContextHolder.getActivity())
+							.setTitle(R.string.url_leaving_redirect_title)
+							.setCancelable(false)
+							.setMessage(ContextHolder.getAppContext().getString(R.string.url_leaving_redirect_description, url))
+							.setPositiveButton(R.string.url_leaving_redirect_button_proceed, (dialog2, which) -> {
+								ContextHolder.getActivity().startActivity(intent);
+							})
+							.setNegativeButton(R.string.url_leaving_redirect_button_cancel, null)
+							.show();
+					});
+				}
 			}
 		} catch (ConnectionNotFoundException e) {
 			throw e;
