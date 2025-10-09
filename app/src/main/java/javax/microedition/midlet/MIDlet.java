@@ -18,6 +18,7 @@
  */
 package javax.microedition.midlet;
 
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
@@ -35,6 +36,7 @@ import javax.microedition.lcdui.Display;
 import javax.microedition.shell.MidletThread;
 import javax.microedition.util.ContextHolder;
 
+import ru.playsoftware.j2meloader.R;
 import ru.playsoftware.j2meloader.applist.AppItem;
 import ru.playsoftware.j2meloader.util.AppUtils;
 
@@ -114,7 +116,18 @@ public abstract class MIDlet {
 				} else {
 					intent.setData(Uri.parse(url));
 				}
-				ContextHolder.getActivity().startActivity(intent);
+
+
+				new AlertDialog.Builder(ContextHolder.getActivity())
+					.setTitle(R.string.url_leaving_redirect_title)
+					.setCancelable(false)
+					.setMessage(ContextHolder.getAppContext().getString(R.string.url_leaving_redirect_description, url))
+					.setPositiveButton(R.string.url_leaving_redirect_button_proceed, (dialog, which) -> {
+						ContextHolder.getActivity().startActivity(intent);
+						dialog.dismiss();
+					})
+					.setNegativeButton(R.string.url_leaving_redirect_button_cancel, null)
+					.show();
 			}
 		} catch (ConnectionNotFoundException e) {
 			throw e;
