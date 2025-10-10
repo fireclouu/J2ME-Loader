@@ -26,10 +26,14 @@ import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import ru.playsoftware.j2meloader.R;
+import ru.playsoftware.j2meloader.config.Config;
+import ru.playsoftware.j2meloader.config.ProfileModel;
+import ru.playsoftware.j2meloader.config.ProfilesManager;
 import ru.playsoftware.j2meloader.databinding.ListRowJarBinding;
 
 public class AppsListAdapter extends BaseAdapter implements Filterable {
@@ -75,9 +79,16 @@ public class AppsListAdapter extends BaseAdapter implements Filterable {
 		} else {
 			holder.binding.icon.setImageResource(R.mipmap.ic_launcher);
 		}
+		String path = Config.getEmulatorDir() + Config.MIDLET_CONFIGS_DIR + item.getTitle();
+		ProfileModel params = ProfilesManager.loadConfig(new File(path));
+		String resolution = "";
+		if (params != null) resolution = params.screenWidth + "x" + params.screenHeight;
+
 		holder.binding.name.setText(item.getTitle());
 		holder.binding.author.setText(item.getAuthor());
 		holder.binding.appVersion.setText(item.getVersion());
+		holder.binding.resolution.setText(resolution);
+
 
 		return view;
 	}
